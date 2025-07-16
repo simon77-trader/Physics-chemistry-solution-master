@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics & Chemistry AI Solver</title>
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --dark-color: #202124;
+            --light-color: #f8f9fa;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: var(--dark-color);
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        
+        /* Form Styles */
+        .solver-form {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3367d6;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #2d9249;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: #e8f0fe;
+        }
+        
+        /* Results Section */
+        .results {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: none;
+        }
+        
+        .results h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .answer {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            white-space: pre-line;
+        }
+        
+        /* Loading Animation */
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loader-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .solver-form, .results {
+                padding: 15px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Physics & Chemistry AI Solver</h1>
+            <p class="subtitle">Get step-by-step solutions to your questions</p>
+        </header>
+        
+        <main>
+            <form class="solver-form" id="questionForm">
+                <div class="form-group">
+                    <label for="subject">Select Subject</label>
+                    <select id="subject" required>
+                        <option value="" disabled selected>Choose a subject</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="class">Select Class</label>
+                    <select id="class" required>
+                        <option value="" disabled selected>Choose your class</option>
+                        <option value="8">Class 8</option>
+                        <option value="9">Class 9</option>
+                        <option value="10">Class 10</option>
+                        <option value="11">Class 11</option>
+                        <option value="12">Class 12</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="question">Your Question</label>
+                    <textarea id="question" placeholder="Type your physics or chemistry question here..." required></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">Get Answer</button>
+                    <button type="button" class="btn-secondary" id="tryExample">Try Example</button>
+                    <button type="button" class="btn-outline" id="clearForm">Clear</button>
+                </div>
+            </form>
+            
+            <div class="loader" id="loader">
+                <div class="loader-spinner"></div>
+                <p>Generating your answer...</p>
+            </div>
+            
+            <div class="results" id="results">
+                <h2>Step-by-Step Solution</h2>
+                <div class="answer" id="answer"></div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // DOM Elements
+        const questionForm = document.getElementById('questionForm');
+        const subjectSelect = document.getElementById('subject');
+        const classSelect = document.getElementById('class');
+        const questionInput = document.getElementById('question');
+        const tryExampleBtn = document.getElementById('tryExample');
+        const clearFormBtn = document.getElementById('clearForm');
+        const loader = document.getElementById('loader');
+        const results = document.getElementById('results');
+        const answerDiv = document.getElementById('answer');
+        
+        // Example questions database
+        const exampleQuestions = {
+            physics: {
+                '8': 'Why does a bicycle come to rest when we stop pedaling?',
+                '9': 'Calculate the force required to accelerate a 2 kg object at 3 m/s².',
+                '10': 'Explain the working principle of an electric motor.',
+                '11': 'Derive the equation of motion v² - u² = 2as using calculus.',
+                '12': 'A particle is moving in a circle of radius R with constant speed v. Show that its acceleration is v²/R directed towards the center.'
+            },
+            chemistry: {
+                '8': 'Why do we add salt to ice in ice cream makers?',
+                '9': 'Balance the chemical equation: H₂ + O₂ → H₂O',
+                '10': 'Explain the process of electrolysis of water.',
+                '11': 'Calculate the pH of a 0.01 M solution of HCl.',
+                '12': 'Using valence bond theory, explain the structure and magnetic behavior of [Fe(H₂O)₆]²⁺ ion.'
+            }
+        };
+        
+        // Event Listeners
+        questionForm.addEventListener('submit', handleSubmit);
+        tryExampleBtn.addEventListener('click', loadExample);
+        clearFormBtn.addEventListener('click', clearForm);
+        
+        // Form Submission Handler
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            const subject = subjectSelect.value;
+            const classLevel = classSelect.value;
+            const question = questionInput.value.trim();
+            
+            if (!subject || !classLevel || !question) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            // Show loading animation
+            loader.style.display = 'block';
+            results.style.display = 'none';
+            
+            // Simulate API call with timeout
+            setTimeout(() => {
+                const answer = generateAnswer(subject, classLevel, question);
+                displayAnswer(answer);
+                
+                // Hide loader and show results
+                loader.style.display = 'none';
+                results.style.display = 'block';
+            }, 1500);
+        }
+        
+        // Generate AI answer (placeholder function)
+        // In a real implementation, this would call an AI API like DeepSeek or OpenAI
+        function generateAnswer(subject, classLevel, question) {
+            // This is a simulation - in a real app, you would call an API here
+            // Example: return callAISolverAPI(subject, classLevel, question);
+            
+            // Check if the question is numerical
+            const isNumerical = question.match(/(calculate|find|determine|what is|how much)/i) && 
+                              question.match(/[0-9]/);
+            
+            // Check if it's a real-life question
+            const isRealLife = question.match(/(why|how does|explain|what causes)/i);
+            
+            if (isNumerical) {
+                return generateNumericalAnswer(subject, question);
+            } else if (isRealLife) {
+                return generateRealLifeAnswer(subject, question);
+            } else {
+                return generateTheoryAnswer(subject, question);
+            }
+        }
+        
+        // Generate different types of answers
+        function generateNumericalAnswer(subject, question) {
+            // This would be more sophisticated in a real implementation
+            return `To solve this numerical problem, follow these steps:
+
+1. Identify the given quantities from the question:
+   - Mass (m) = 2 kg
+   - Acceleration (a) = 3 m/s²
+
+2. Recall the relevant formula:
+   - Newton's Second Law: Force (F) = mass × acceleration
+   - F = m × a
+
+3. Substitute the known values into the formula:
+   - F = 2 kg × 3 m/s²
+
+4. Calculate the result:
+   - F = 6 kg·m/s² = 6 N
+
+5. Final Answer:
+   The required force is \boxed{6 \text{ N}}`;
+        }
+        
+        function generateTheoryAnswer(subject, question) {
+            return `Conceptual Explanation:
+
+An electric motor works on the principle of electromagnetic induction. Here's how it operates:
+
+1. Basic Components:
+   - Stator: The stationary part that produces a magnetic field
+   - Rotor: The rotating part that carries current
+   - Commutator: Reverses current direction to maintain rotation
+
+2. Working Principle:
+   - When electric current passes through the coil in a magnetic field, it experiences a force (Lorentz force)
+   - According to Fleming's Left Hand Rule, this force causes the coil to rotate
+   - The commutator reverses current direction every half rotation to maintain continuous motion
+
+3. Energy Conversion:
+   - Electrical energy → Mechanical energy
+
+Real-world Applications:
+- Used in fans, washing machines, electric vehicles
+- Industrial applications with high power requirements`;
+        }
+        
+        function generateRealLifeAnswer(subject, question) {
+            return `Practical Explanation - Why salt is added to ice:
+
+1. Colligative Properties:
+   - Adding salt to ice is an application of "freezing point depression"
+   - Impurities (like salt) lower the freezing point of water
+
+2. Molecular Explanation:
+   - Salt ions disrupt the orderly arrangement of water molecules needed to form ice
+   - This makes it harder for water to freeze, so the temperature drops
+
+3. Practical Effect:
+   - Pure ice melts at 0°C
+   - Salted ice can drop to -21°C in concentrated solutions
+   - This creates a colder environment for faster freezing
+
+Common Applications:
+- Making ice cream
+- De-icing roads in winter
+- Creating low-temperature baths in laboratories`;
+        }
+        
+        // Display the answer
+        function displayAnswer(answer) {
+            answerDiv.innerHTML = answer;
+        }
+        
+        // Load example question
+        function loadExample() {
+            const subject = subjectSelect.value;
+            const classLevel = classSelect.value;
+            
+            if (!subject || !classLevel) {
+                alert('Please select subject and class first');
+                return;
+            }
+            
+            questionInput.value = exampleQuestions[subject][classLevel];
+        }
+        
+        // Clear form
+        function clearForm() {
+            questionForm.reset();
+            results.style.display = 'none';
+            loader.style.display = 'none';
+        }
+    </script>
+</body>
+  </html>
